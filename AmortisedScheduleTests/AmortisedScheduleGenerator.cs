@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using Common.Extensions;
-    using Microsoft.VisualBasic;
 
     public class AmortisedScheduleGenerator
     {
@@ -36,7 +35,7 @@
 
         public decimal BalloonAmount() => this.BalloonPercentage() * this.Principal;
 
-        public double Payment() => Math.Abs(Financial.Pmt(this.MonthlyApr(), this.NumberOfPayments, (double)this.Principal, (double)-this.BalloonAmount()));
+        public double Payment() => Math.Abs(((double)this.BalloonAmount() - (double)this.Principal * Math.Pow(this.MonthlyApr() + 1.0, this.NumberOfPayments)) / (Math.Pow(this.MonthlyApr() + 1.0, this.NumberOfPayments) - 1) * this.MonthlyApr());
 
         private void GenerateScheduleItems()
         {
@@ -51,5 +50,5 @@
 
             this.MonthlyScheduleItems[^1].Principal += balance;
         }
-    }
+    } 
 }
