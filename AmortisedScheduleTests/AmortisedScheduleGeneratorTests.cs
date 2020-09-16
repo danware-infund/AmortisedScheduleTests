@@ -101,7 +101,7 @@ namespace AmortisedScheduleTests
         public void Schedule_GeneratesExpectedFirstInterestAmount(decimal principal, double interestRate, int amortisationInYears, decimal expected)
         {
             var test = new AmortisedScheduleGenerator(principal, interestRate, NumberOfPayments, amortisationInYears, startDate, BankHolidays());
-            Math.Round(test.MonthlyScheduleItems[0].Interest, 2)
+            Math.Round(test.MonthlyScheduleItems[0].InterestAmount, 2)
                 .Should().Be(expected);
         }
 
@@ -113,7 +113,7 @@ namespace AmortisedScheduleTests
         public void Schedule_GeneratesExpectedTotalPrincipal(decimal principal, double interestRate, int amortisationInYears)
         {
             var test = new AmortisedScheduleGenerator(principal, interestRate, NumberOfPayments, amortisationInYears, startDate, BankHolidays());
-            Math.Round(test.MonthlyScheduleItems.Sum(x => x.Principal), 2)
+            Math.Round(test.MonthlyScheduleItems.Sum(x => x.PrincipalAmount), 2)
                 .Should().Be(principal);
         }
 
@@ -125,7 +125,7 @@ namespace AmortisedScheduleTests
         public void Schedule_GeneratesExpectedTotalInterest(decimal principal, double interestRate, int amortisationInYears, decimal expected)
         {
             var test = new AmortisedScheduleGenerator(principal, interestRate, NumberOfPayments, amortisationInYears, startDate, BankHolidays());
-            Math.Round(test.MonthlyScheduleItems.Sum(x => x.Interest), 2)
+            Math.Round(test.MonthlyScheduleItems.Sum(x => x.InterestAmount), 2)
                 .Should().Be(expected);
         }
 
@@ -137,7 +137,7 @@ namespace AmortisedScheduleTests
         public void Schedule_GeneratesExpectedFinalInterest(decimal principal, double interestRate, int amortisationInYears, decimal expected)
         {
             var test = new AmortisedScheduleGenerator(principal, interestRate, NumberOfPayments, amortisationInYears, startDate, BankHolidays());
-            Math.Round(test.MonthlyScheduleItems[^1].Interest, 2)
+            Math.Round(test.MonthlyScheduleItems[^1].InterestAmount, 2)
                 .Should().Be(expected);
         }
 
@@ -149,7 +149,7 @@ namespace AmortisedScheduleTests
         public void Schedule_GeneratesExpectedFinalPrincipal(decimal principal, double interestRate, int amortisationInYears, decimal expected)
         {
             var test = new AmortisedScheduleGenerator(principal, interestRate, NumberOfPayments, amortisationInYears, startDate, BankHolidays());
-            Math.Round(test.MonthlyScheduleItems[^1].Principal, 2)
+            Math.Round(test.MonthlyScheduleItems[^1].PrincipalAmount, 2)
                 .Should().Be(expected);
         }
 
@@ -161,25 +161,15 @@ namespace AmortisedScheduleTests
         public void Schedule_GeneratesExpectedPenultimatePrincipal(decimal principal, double interestRate, int amortisationInYears, decimal expected)
         {
             var test = new AmortisedScheduleGenerator(principal, interestRate, NumberOfPayments, amortisationInYears, startDate, BankHolidays());
-            Math.Round(test.MonthlyScheduleItems[^2].Principal, 2)
+            Math.Round(test.MonthlyScheduleItems[^2].PrincipalAmount, 2)
                 .Should().Be(expected);
-        }
-
-        [Fact]
-        public void EachItem_ShouldHavePaymentDate()
-        {
-            var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
-            foreach (var item in test.MonthlyScheduleItems)
-            {
-                item.PaymentDate.Should().HaveValue();
-            }
         }
 
         [Fact]
         public void FirstPaymentDate_IsOverOneMonthAway()
         {
             var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
-            test.MonthlyScheduleItems[0].PaymentDate
+            test.MonthlyScheduleItems[0].Date
                 .Should().BeOnOrAfter(startDate.AddMonths(1).Date);
         }
 
@@ -189,15 +179,15 @@ namespace AmortisedScheduleTests
             var nextMonth = startDate.Date.AddMonths(1);
             var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
 
-            test.MonthlyScheduleItems[0].PaymentDate.Should().HaveMonth(nextMonth.Month);
-            test.MonthlyScheduleItems[0].PaymentDate.Should().HaveYear(nextMonth.Year);
+            test.MonthlyScheduleItems[0].Date.Should().HaveMonth(nextMonth.Month);
+            test.MonthlyScheduleItems[0].Date.Should().HaveYear(nextMonth.Year);
         }
 
         [Fact]
         public void FirstPaymentDate_DoesNotIncludeTimeOfDay()
         {
             var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
-            test.MonthlyScheduleItems[0].PaymentDate
+            test.MonthlyScheduleItems[0].Date
                 .Should().HaveHour(0);
         }
 
@@ -205,7 +195,7 @@ namespace AmortisedScheduleTests
         public void SecondPaymentDate_IsOverTwoMonthsAway()
         {
             var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
-            test.MonthlyScheduleItems[1].PaymentDate
+            test.MonthlyScheduleItems[1].Date
                 .Should().BeOnOrAfter(startDate.AddMonths(2).Date);
         }
 
@@ -215,8 +205,8 @@ namespace AmortisedScheduleTests
             var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
             foreach (var item in test.MonthlyScheduleItems)
             {
-                item.PaymentDate.Value.DayOfWeek.Should().NotBe(DayOfWeek.Saturday);
-                item.PaymentDate.Value.DayOfWeek.Should().NotBe(DayOfWeek.Sunday);
+                item.Date.DayOfWeek.Should().NotBe(DayOfWeek.Saturday);
+                item.Date.DayOfWeek.Should().NotBe(DayOfWeek.Sunday);
             }
         }
 
@@ -226,7 +216,7 @@ namespace AmortisedScheduleTests
             var test = new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, BankHolidays());
             foreach (var item in test.MonthlyScheduleItems)
             {
-                BankHolidays().Should().NotContain(item.PaymentDate.Value);
+                BankHolidays().Should().NotContain(item.Date);
             }
         }
     }
