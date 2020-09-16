@@ -51,9 +51,8 @@
             this.MonthlyScheduleItems[^1].PrincipalAmount += balance;
         }
 
-        private static RepaymentDto CreateRepayment(DateTime paymentDate, decimal principal, decimal interest, int sequence)
-        {
-            return new RepaymentDto
+        private static RepaymentDto CreateRepayment(DateTime paymentDate, decimal principal, decimal interest, int sequence) =>
+            new RepaymentDto
             {
                 Date = paymentDate,
                 InterestAmount = interest,
@@ -66,6 +65,5 @@
                 Processed = false,
                 SequenceNumber = sequence,
             };
-        }
     }
 }
