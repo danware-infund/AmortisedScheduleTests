@@ -12,6 +12,26 @@
 
         public AmortisedScheduleGenerator(decimal principal, double annualInterestRate, int numberOfPayments, int amortisationInYears, DateTime disbursalDate, List<DateTime> bankHolidays)
         {
+            if (principal < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(principal));
+            }
+
+            if (annualInterestRate <= 0 || annualInterestRate > 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(annualInterestRate));
+            }
+
+            if (numberOfPayments < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(numberOfPayments));
+            }
+
+            if (amortisationInYears < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amortisationInYears));
+            }
+
             this.Principal = principal;
             this.AnnualInterestRate = annualInterestRate;
             this.NumberOfPayments = numberOfPayments;

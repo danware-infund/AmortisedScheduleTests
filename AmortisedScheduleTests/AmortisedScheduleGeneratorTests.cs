@@ -34,6 +34,42 @@ namespace AmortisedScheduleTests
         private const int NumberOfPayments = 24;
         private static readonly DateTime startDate = new DateTime(2020, 9, 5);
 
+        [Fact]
+        public void NegativePrincipal_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(-1, 0.3, NumberOfPayments, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void ZeroPrincipal_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(0, 0.3, NumberOfPayments, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void NegativeInterestRate_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, -0.1, NumberOfPayments, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void ZeroInterestRate_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 0, NumberOfPayments, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void InterestRateGreaterThanOne_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 1.1, NumberOfPayments, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void NegativeNumerOfPayments_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 0.3, -1, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void ZeroNumberOfPayments_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 0.3, 0, 3, startDate, BankHolidays()));
+
+        [Fact]
+        public void NegativeAmortisationYears_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, -1, startDate, BankHolidays()));
+
+        [Fact]
+        public void ZeroAmortisationYears_ThrowsArgumentOutOfRangeException() =>
+            Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 0, startDate, BankHolidays()));
+
         [Theory]
         [InlineData(100000, 0.28, 2, 0.0208)]
         [InlineData(100000, 0.30, 3, 0.0221)]
