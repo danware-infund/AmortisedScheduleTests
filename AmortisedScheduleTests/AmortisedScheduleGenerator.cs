@@ -38,7 +38,7 @@
             this.AmortisationInYears = amortisationInYears;
 
             this.disbursalDate = disbursalDate;
-            this.bankHolidays = bankHolidays;
+            this.bankHolidays = bankHolidays ?? throw new ArgumentNullException(nameof(bankHolidays));
 
             this.GenerateScheduleItems();
         }
