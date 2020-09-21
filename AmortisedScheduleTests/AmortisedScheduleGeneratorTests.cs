@@ -70,6 +70,10 @@ namespace AmortisedScheduleTests
         public void ZeroAmortisationYears_ThrowsArgumentOutOfRangeException() =>
             Assert.Throws<ArgumentOutOfRangeException>(() => new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 0, startDate, BankHolidays()));
 
+        [Fact]
+        public void NullBankHoliday_ThrowsArgumentNullException() =>
+            Assert.Throws<ArgumentNullException>(() => new AmortisedScheduleGenerator(100000, 0.3, NumberOfPayments, 3, startDate, null));
+
         [Theory]
         [InlineData(100000, 0.28, 2, 0.0208)]
         [InlineData(100000, 0.30, 3, 0.0221)]
